@@ -1,0 +1,1548 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kuis • Aturan, Permutasi &amp; Peluang • Seri 3</title>
+    <style>
+      /* ========================================
+           AURORA BACKGROUND DINAMIS
+        ======================================== */
+      #aurora-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+
+      .aurora {
+        position: absolute;
+        opacity: 0;
+        filter: blur(60px);
+        will-change: transform, opacity;
+        transition: opacity 8s ease-in-out;
+        border-radius: 50%;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* ========================================
+           STYLE UTAMA KUIS
+        ======================================== */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family:
+          'Segoe UI',
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+
+      body {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        background: #090d16;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 16px;
+        color: #e2e8f0;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 820px;
+        width: 100%;
+        background: rgba(13, 18, 32, 0.78);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-radius: 24px;
+        padding: 28px;
+        box-shadow:
+          0 25px 60px rgba(0, 0, 0, 0.8),
+          0 0 40px rgba(110, 231, 183, 0.08);
+        border: 1px solid rgba(110, 231, 183, 0.12);
+        transition: filter 0.3s ease;
+        position: relative;
+        z-index: 1;
+      }
+
+      .container.blurred {
+        filter: blur(6px);
+        pointer-events: none;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      /* ---- Custom Alert ---- */
+      #customAlertOverlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(6px);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+      }
+      #customAlertOverlay.active {
+        display: flex;
+      }
+      .alert-box {
+        background: #1f2937;
+        padding: 28px 32px;
+        border-radius: 20px;
+        max-width: 420px;
+        width: 90%;
+        text-align: center;
+        border: 1px solid #4f46e5;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+      }
+      .alert-box .alert-icon {
+        font-size: 2.8rem;
+        margin-bottom: 8px;
+      }
+      .alert-box .alert-message {
+        font-size: 1.05rem;
+        color: #f3f4f6;
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+      .alert-box .alert-btn-group {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+      }
+      .alert-box .alert-btn {
+        background: #4f46e5;
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .alert-box .alert-btn:hover {
+        background: #6366f1;
+      }
+      .alert-box .alert-btn-cancel {
+        background: #374151;
+        color: #d1d5db;
+      }
+      .alert-box .alert-btn-cancel:hover {
+        background: #4b5563;
+      }
+
+      /* ---- Login ---- */
+      #loginPage {
+        text-align: center;
+      }
+      #loginPage h1 {
+        font-size: 2.2rem;
+        background: linear-gradient(135deg, #6ee7b7, #818cf8, #4f46e5);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 6px;
+      }
+      #loginPage p {
+        color: #9ca3af;
+        font-size: 1rem;
+        margin-bottom: 24px;
+      }
+
+      .form-group {
+        max-width: 340px;
+        margin: 14px auto;
+        text-align: left;
+      }
+      .form-group label {
+        display: block;
+        font-weight: 600;
+        color: #d1d5db;
+        margin-bottom: 6px;
+        font-size: 0.95rem;
+      }
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(31, 41, 55, 0.8);
+        border: 2px solid #374151;
+        border-radius: 12px;
+        color: #f9fafb;
+        font-size: 1rem;
+        transition: 0.2s;
+      }
+      .form-group input:focus,
+      .form-group select:focus {
+        border-color: #6366f1;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+      }
+      .form-group select option {
+        background: #1f2937;
+        color: #f9fafb;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #4f46e5, #6366f1);
+        color: white;
+        border: none;
+        padding: 14px 40px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: 0.2s;
+        margin-top: 12px;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+      }
+
+      /* ---- Quiz Header ---- */
+      #quizHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(31, 41, 55, 0.6);
+        gap: 10px;
+      }
+      #quizHeader h2 {
+        font-size: 1.2rem;
+        color: #f3f4f6;
+      }
+      #progressDisplay {
+        color: #9ca3af;
+        font-weight: 600;
+        font-size: 0.95rem;
+        background: rgba(31, 41, 55, 0.8);
+        padding: 4px 16px;
+        border-radius: 20px;
+        border: 1px solid #374151;
+      }
+      #timerDisplay {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #fbbf24;
+        background: rgba(31, 41, 55, 0.8);
+        padding: 4px 18px;
+        border-radius: 20px;
+        border: 1px solid rgba(251, 191, 36, 0.3);
+        font-variant-numeric: tabular-nums;
+      }
+      #timerDisplay.warning {
+        color: #f87171;
+        border-color: rgba(248, 113, 113, 0.4);
+        animation: pulse 1s infinite;
+      }
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      /* ---- Soal Single ---- */
+      #soalContainer {
+        min-height: 320px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .soal-card {
+        background: rgba(31, 41, 55, 0.8);
+        border-radius: 16px;
+        padding: 24px 28px;
+        border-left: 5px solid #4f46e5;
+        animation: fadeSlide 0.3s ease;
+      }
+      @keyframes fadeSlide {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .soal-card .nomor-soal {
+        font-weight: 700;
+        color: #818cf8;
+        font-size: 1rem;
+        margin-bottom: 6px;
+      }
+      .soal-card .pertanyaan {
+        font-weight: 600;
+        font-size: 1.05rem;
+        color: #f3f4f6;
+        line-height: 1.6;
+        margin-bottom: 18px;
+      }
+
+      /* ---- Opsi Vertikal (5 pilihan) ---- */
+      .opsi-vertical {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 4px;
+      }
+      .opsi-vertical label {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 12px 18px;
+        background: rgba(17, 24, 39, 0.7);
+        border-radius: 10px;
+        border: 2px solid #2a3346;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #d1d5db;
+        font-size: 0.98rem;
+      }
+      .opsi-vertical label:hover {
+        border-color: #4f46e5;
+        background: rgba(26, 34, 54, 0.8);
+      }
+      .opsi-vertical label.selected {
+        border-color: #6366f1;
+        background: rgba(30, 40, 68, 0.8);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+      }
+      .opsi-vertical label .option-label {
+        display: inline-block;
+        font-weight: 700;
+        color: #818cf8;
+        min-width: 28px;
+      }
+      .opsi-vertical input[type='radio'] {
+        accent-color: #6366f1;
+        transform: scale(1.15);
+        flex-shrink: 0;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+      .opsi-vertical .option-text {
+        flex: 1;
+      }
+
+      /* ---- True/False ---- */
+      .truefalse-group {
+        display: flex;
+        gap: 30px;
+        margin-top: 4px;
+      }
+      .truefalse-group label {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 24px;
+        background: rgba(17, 24, 39, 0.7);
+        border-radius: 10px;
+        border: 2px solid #2a3346;
+        cursor: pointer;
+        transition: 0.2s;
+        color: #d1d5db;
+        font-size: 0.98rem;
+      }
+      .truefalse-group label:hover {
+        border-color: #4f46e5;
+      }
+      .truefalse-group label.selected {
+        border-color: #6366f1;
+        background: rgba(30, 40, 68, 0.8);
+      }
+      .truefalse-group input[type='radio'] {
+        accent-color: #6366f1;
+        transform: scale(1.15);
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+
+      /* ---- Fill-in ---- */
+      .fill-group {
+        margin-top: 4px;
+      }
+      .fill-group input[type='text'] {
+        background: rgba(17, 24, 39, 0.7);
+        border: 2px solid #2a3346;
+        border-radius: 10px;
+        padding: 12px 18px;
+        color: #f9fafb;
+        font-size: 1rem;
+        width: 200px;
+        transition: 0.2s;
+      }
+      .fill-group input[type='text']:focus {
+        border-color: #6366f1;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+      }
+
+      /* ---- Navigasi ---- */
+      .nav-area {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(31, 41, 55, 0.6);
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .nav-btn {
+        background: #2a3346;
+        color: #e2e8f0;
+        border: none;
+        padding: 10px 28px;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .nav-btn:hover:not(:disabled) {
+        background: #374151;
+      }
+      .nav-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+      .nav-btn-primary {
+        background: #4f46e5;
+        color: white;
+      }
+      .nav-btn-primary:hover:not(:disabled) {
+        background: #6366f1;
+      }
+      .nav-btn-success {
+        background: #059669;
+        color: white;
+      }
+      .nav-btn-success:hover:not(:disabled) {
+        background: #10b981;
+      }
+      .nav-btn .icon {
+        font-size: 1.2rem;
+      }
+
+      /* ---- Result ---- */
+      #resultPage {
+        text-align: center;
+      }
+      .done-message {
+        background: rgba(31, 41, 55, 0.8);
+        padding: 10px 16px;
+        border-radius: 20px;
+        display: inline-block;
+        color: #fbbf24;
+        font-weight: 600;
+        border: 1px solid rgba(251, 191, 36, 0.3);
+        margin-bottom: 14px;
+        font-size: 0.95rem;
+      }
+      .skor-angka {
+        font-size: 4rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #6ee7b7, #818cf8, #4f46e5);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        display: inline-block;
+        padding: 6px 24px;
+        background-color: rgba(31, 41, 55, 0.8);
+        border-radius: 40px;
+        margin: 10px 0;
+        border: 1px solid #4f46e5;
+      }
+      .detail {
+        background: rgba(31, 41, 55, 0.8);
+        padding: 16px;
+        border-radius: 12px;
+        margin: 14px 0;
+        font-size: 1rem;
+        color: #d1d5db;
+        border: 1px solid #374151;
+        text-align: left;
+        max-width: 360px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .status-send {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        background: rgba(31, 41, 55, 0.8);
+      }
+      .status-send.success {
+        color: #34d399;
+        border: 1px solid rgba(52, 211, 153, 0.3);
+      }
+      .status-send.error {
+        color: #f87171;
+        border: 1px solid rgba(248, 113, 113, 0.3);
+      }
+      .status-send.sending {
+        color: #fbbf24;
+        border: 1px solid rgba(251, 191, 36, 0.3);
+      }
+      .btn-secondary {
+        background: #374151;
+        color: #f3f4f6;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 30px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+        margin-top: 10px;
+      }
+      .btn-secondary:hover {
+        background: #4b5563;
+      }
+
+      /* ---- Fullscreen Warning ---- */
+      #fullscreenWarning {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(6px);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+      .warning-box {
+        background: #1f2937;
+        padding: 32px;
+        border-radius: 20px;
+        max-width: 420px;
+        text-align: center;
+        border: 1px solid #f87171;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+      }
+      .warning-box h3 {
+        font-size: 1.6rem;
+        color: #f87171;
+        margin-bottom: 8px;
+      }
+      .warning-box p {
+        font-size: 0.95rem;
+        color: #d1d5db;
+        margin: 8px 0;
+      }
+      .warning-box .timer-big {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: #fbbf24;
+        margin: 8px 0;
+      }
+      .warning-box .btn-back {
+        background: #4f46e5;
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 20px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+
+      /* ---- Responsive ---- */
+      @media (max-width: 640px) {
+        .container {
+          padding: 16px;
+        }
+        #loginPage h1 {
+          font-size: 1.7rem;
+        }
+        .soal-card {
+          padding: 16px 18px;
+        }
+        .soal-card .pertanyaan {
+          font-size: 0.95rem;
+        }
+        .opsi-vertical label {
+          padding: 10px 14px;
+          font-size: 0.9rem;
+        }
+        .truefalse-group {
+          flex-direction: column;
+          gap: 8px;
+        }
+        .truefalse-group label {
+          padding: 10px 18px;
+        }
+        .nav-area {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .nav-btn {
+          justify-content: center;
+          padding: 12px;
+        }
+        .nav-area .nav-spacer {
+          display: none;
+        }
+        .fill-group input[type='text'] {
+          width: 100%;
+        }
+      }
+
+      ::-webkit-scrollbar {
+        width: 6px;
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(110, 231, 183, 0.3);
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(110, 231, 183, 0.5);
+      }
+
+      .focus-loss-badge {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(248, 113, 113, 0.9);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: none;
+        z-index: 999;
+        backdrop-filter: blur(4px);
+        border: 1px solid #f87171;
+        pointer-events: none;
+      }
+      .focus-loss-badge.active {
+        display: block;
+        animation: pulseBadge 1s infinite;
+      }
+      @keyframes pulseBadge {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ============================================
+    BACKGROUND AURORA DINAMIS
+    ============================================ -->
+    <div id="aurora-container"></div>
+
+    <!-- Custom Alert -->
+    <div id="customAlertOverlay">
+      <div class="alert-box">
+        <div class="alert-icon" id="alertIcon">⚠️</div>
+        <div class="alert-message" id="alertMessage">Pesan</div>
+        <div class="alert-btn-group" id="alertBtnGroup">
+          <button class="alert-btn" id="alertOkBtn">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fullscreen Warning -->
+    <div id="fullscreenWarning">
+      <div class="warning-box">
+        <h3>⛔ Keluar dari Layar Penuh</h3>
+        <p>Anda keluar dari mode fullscreen.</p>
+        <p>
+          Kembalikan dalam <span id="countdownTimer">10</span> detik, atau kuis
+          berakhir.
+        </p>
+        <div class="timer-big" id="timerWarning">10</div>
+        <button class="btn-back" id="btnBackFullscreen">
+          ↩ Kembali ke Fullscreen
+        </button>
+      </div>
+    </div>
+
+    <!-- Fokus Loss Badge -->
+    <div id="focusLossBadge" class="focus-loss-badge">
+      ⚠️ Jendela kuis tidak aktif! Kembali dalam 3 detik atau kuis berakhir.
+    </div>
+
+    <!-- Main Container -->
+    <div class="container" id="appContainer">
+      <!-- ========== LOGIN ========== -->
+      <div id="loginPage">
+        <h1>🧮 REMEDIAL STS &amp; MATEMATIKA</h1>
+        <p>Aturan Perkalian • Permutasi • Kombinasi • Peluang Kejadian</p>
+        <div class="form-group">
+          <label for="namaInput">Nama Lengkap</label>
+          <input
+            type="text"
+            id="namaInput"
+            placeholder="Ketik nama Anda..."
+            autocomplete="off"
+          />
+        </div>
+        <div class="form-group">
+          <label for="kelasSelect">Kelas</label>
+          <select id="kelasSelect">
+            <option value="">-- Pilih Kelas --</option>
+            <option value="11.1">11.1</option>
+            <option value="11.2">11.2</option>
+            <option value="11.3">11.3</option>
+            <option value="12.1">12.1</option>
+            <option value="12.2">12.2</option>
+            <option value="12.3">12.3</option>
+          </select>
+        </div>
+        <button class="btn-primary" id="btnStart" type="button">
+          🚀 Mulai Kuis
+        </button>
+        <p style="margin-top: 14px; color: #6b7280; font-size: 0.85rem">
+          * Tombol Enter, Tab, atau Esc diatur khusus untuk interaksi kuis.
+        </p>
+      </div>
+
+      <!-- ========== QUIZ ========== -->
+      <div id="quizPage" class="hidden">
+        <div id="quizHeader">
+          <h2>📝 Soal Aturan, Permutasi &amp; Peluang</h2>
+          <div
+            style="
+              display: flex;
+              gap: 12px;
+              align-items: center;
+              flex-wrap: wrap;
+            "
+          >
+            <span id="progressDisplay">1 / 15</span>
+            <span id="timerDisplay">45:00</span>
+          </div>
+        </div>
+
+        <div id="soalContainer">
+          <!-- Dinamis via JS -->
+        </div>
+
+        <div class="nav-area">
+          <button class="nav-btn" id="btnPrev" disabled>
+            <span class="icon">◀</span> Sebelumnya
+          </button>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap">
+            <button
+              class="nav-btn nav-btn-success"
+              id="btnSubmitQuiz"
+              type="button"
+            >
+              📨 Kirim Jawaban
+            </button>
+          </div>
+          <button class="nav-btn nav-btn-primary" id="btnNext">
+            Selanjutnya <span class="icon">▶</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ========== RESULT ========== -->
+      <div id="resultPage" class="hidden">
+        <div class="done-message">✅ Kuis Selesai</div>
+        <h2>🏆 Hasil Anda</h2>
+        <div class="skor-angka" id="skorAkhir">0</div>
+        <p style="color: #9ca3af; font-size: 0.95rem">
+          Nilai Akhir (Skala 0 – 100)
+        </p>
+        <div class="detail">
+          <p><strong>Nama:</strong> <span id="resultNama">-</span></p>
+          <p><strong>Kelas:</strong> <span id="resultKelas">-</span></p>
+        </div>
+        <div id="statusSpreadsheet" class="status-send sending">
+          ⏳ Mengirim nilai ...
+        </div>
+        <button class="btn-secondary" id="btnClose" type="button">
+          Tutup / Muat Ulang
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // ======================== AURORA ENGINE ========================
+      (function () {
+        const container = document.getElementById('aurora-container');
+        const colorSets = [
+          [
+            'rgba(0, 255, 180, 0.6)',
+            'rgba(0, 150, 255, 0.6)',
+            'rgba(180, 0, 255, 0.6)',
+            'rgba(0, 255, 100, 0.6)',
+            'rgba(255, 50, 150, 0.6)',
+          ],
+          [
+            'rgba(100, 0, 255, 0.6)',
+            'rgba(0, 200, 255, 0.6)',
+            'rgba(50, 255, 200, 0.6)',
+            'rgba(255, 0, 150, 0.6)',
+            'rgba(0, 100, 255, 0.6)',
+          ],
+          [
+            'rgba(0, 255, 200, 0.6)',
+            'rgba(150, 0, 255, 0.6)',
+            'rgba(255, 100, 0, 0.6)',
+            'rgba(0, 255, 50, 0.6)',
+            'rgba(200, 0, 255, 0.6)',
+          ],
+        ];
+
+        let currentColorSet = 0;
+        const auroras = [];
+
+        for (let i = 0; i < 5; i++) {
+          const aurora = document.createElement('div');
+          aurora.className = 'aurora';
+          aurora.style.background = colorSets[currentColorSet][i];
+          container.appendChild(aurora);
+          auroras.push(aurora);
+
+          setTimeout(() => {
+            aurora.style.opacity = '0.65';
+          }, i * 300);
+
+          animateAurora(aurora, i);
+        }
+
+        function animateAurora(element, index) {
+          let x = Math.random() * 100;
+          let y = Math.random() * 100;
+          let xSpeed = (Math.random() - 0.5) * 0.08;
+          let ySpeed = (Math.random() - 0.5) * 0.08;
+
+          function update() {
+            x += xSpeed;
+            y += ySpeed;
+
+            if (Math.random() < 0.005) {
+              xSpeed = (Math.random() - 0.5) * 0.08;
+              ySpeed = (Math.random() - 0.5) * 0.08;
+            }
+
+            if (x > 120) x = -20;
+            if (x < -20) x = 120;
+            if (y > 120) y = -20;
+            if (y < -20) y = 120;
+
+            const parallax = 0.5 + index * 0.1;
+            element.style.transform = `translate(${x * parallax}%, ${y * parallax}%) scale(${1 + Math.sin(Date.now() * 0.001 * (index + 1)) * 0.15})`;
+
+            requestAnimationFrame(update);
+          }
+          update();
+        }
+
+        setInterval(() => {
+          currentColorSet = (currentColorSet + 1) % colorSets.length;
+          auroras.forEach((a) => {
+            a.style.opacity = '0';
+          });
+          setTimeout(() => {
+            auroras.forEach((a, i) => {
+              a.style.background = colorSets[currentColorSet][i];
+              a.style.opacity = '0.65';
+            });
+          }, 800);
+        }, 15000);
+      })();
+
+      // ======================== CUSTOM ALERT ========================
+      (function () {
+        const overlay = document.getElementById('customAlertOverlay');
+        const messageEl = document.getElementById('alertMessage');
+        const iconEl = document.getElementById('alertIcon');
+        const btnGroup = document.getElementById('alertBtnGroup');
+
+        function showCustomAlert(message, icon = '⚠️', onConfirm = null) {
+          return new Promise((resolve) => {
+            messageEl.textContent = message;
+            iconEl.textContent = icon;
+            overlay.classList.add('active');
+            document.getElementById('appContainer').classList.add('blurred');
+
+            btnGroup.innerHTML = '';
+            if (onConfirm) {
+              const btnCancel = document.createElement('button');
+              btnCancel.className = 'alert-btn alert-btn-cancel';
+              btnCancel.textContent = 'Batal';
+              btnCancel.onclick = () => {
+                overlay.classList.remove('active');
+                document
+                  .getElementById('appContainer')
+                  .classList.remove('blurred');
+                resolve(false);
+              };
+              const btnOk = document.createElement('button');
+              btnOk.className = 'alert-btn';
+              btnOk.textContent = 'Ya / Lanjut';
+              btnOk.onclick = () => {
+                overlay.classList.remove('active');
+                document
+                  .getElementById('appContainer')
+                  .classList.remove('blurred');
+                resolve(true);
+              };
+              btnGroup.appendChild(btnCancel);
+              btnGroup.appendChild(btnOk);
+              btnOk.focus();
+            } else {
+              const btnOk = document.createElement('button');
+              btnOk.className = 'alert-btn';
+              btnOk.textContent = 'OK';
+              btnOk.onclick = () => {
+                overlay.classList.remove('active');
+                document
+                  .getElementById('appContainer')
+                  .classList.remove('blurred');
+                resolve(true);
+              };
+              btnGroup.appendChild(btnOk);
+              btnOk.focus();
+            }
+          });
+        }
+        window.customAlert = showCustomAlert;
+      })();
+
+      // ======================== KONFIGURASI ========================
+      const GOOGLE_SHEETS_WEBAPP_URL =
+        'https://script.google.com/macros/s/AKfycbxhjUkOKVvgTFXSLdl39ptq2X8ucH80dl_h8C6eE9u9WkzrrEGxDapCjRUbc05WaoOI/exec';
+
+      // ======================== SOAL BARU (15 Soal) ========================
+      const soalData = [
+        {
+          type: 'mcq',
+          question:
+            'Dari kota A ke kota B dihubungkan dengan 4 jalan, dari kota B ke kota C dihubungkan dengan 3 jalan dan dari kota C ke kota D dihubungkan dengan 5 jalan. Banyak rute yang mungkin dapat dilalui dari kota A menuju kota D adalah...',
+          options: ['12', '15', '20', '35', '60'],
+          correct: '60',
+        },
+        {
+          type: 'mcq',
+          question:
+            'Banyak bilangan yang terdiri atas 2 angka yang dipilih dari angka-angka 1, 2, 3, 4, 6, 7 dengan syarat angka tidak berulang adalah',
+          options: ['30', '42', '210', '360', '420'],
+          correct: '30',
+        },
+        {
+          type: 'mcq',
+          question:
+            'Lima orang peserta suatu lomba akan memperebutkan juara I, juara II, dan juara III. Banyak posisi juara yang terjadi adalah...',
+          options: ['12', '15', '20', '40', '60'],
+          correct: '60',
+        },
+        {
+          type: 'mcq',
+          question:
+            'Sebuah keluarga terdiri dari ayah, ibu dan tiga putranya akan berfoto bersama. Jika mereka duduk berderet satu baris dengan syarat ayah dan ibu harus duduk di kedua ujung barisan, maka banyaknya susunan duduk mereka adalah ... susunan',
+          options: ['12', '36', '52', '60', '64'],
+          correct: '12',
+        },
+        {
+          type: 'mcq',
+          question:
+            'Ada 7 orang dalam satu ruangan hendak bersalam-salaman satu dengan yang lain, banyak salaman yang terjadi adalah',
+          options: ['9', '18', '20', '21', '42'],
+          correct: '21',
+        },
+        {
+          type: 'mcq',
+          question:
+            'Seorang siswa diminta mengerjakan 9 soal dari 10 soal yang tersedia, tetapi soal nomor 1 sampai dengan nomor 5 harus dikerjakan. Banyak pilihan yang dapat diambil siswa tersebut adalah ...',
+          options: ['4', '5', '6', '9', '10'],
+          correct: '5',
+        },
+        {
+          type: 'mcq',
+          question:
+            'Sebuah dadu yang homogen bermata enam dilempar satu kali, maka peluang mendapatkan mata dadu 3 atau lebih adalah...',
+          options: ['1/6', '1/3', '1/2', '2/3', '5/6'],
+          correct: '2/3',
+        },
+        {
+          type: 'mcq',
+          question:
+            'Sebuah huruf diambil secara acak dari huruf-huruf P, E, L, U, A, N, G. Peluang terambilnya huruf vokal adalah',
+          options: ['2/7', '3/7', '4/9', '3/14', '5/14'],
+          correct: '3/7',
+        },
+        {
+          type: 'mcq',
+          question:
+            'Sepasang suami istri bermaksud mengikuti Keluarga Berencana (KB). Mereka berharap memiliki tiga anak, yakni laki-laki semua. Peluang keinginan mereka terpenuhi adalah ...',
+          options: ['1/3', '1/4', '1/8', '2/5', '2/7'],
+          correct: '1/8',
+        },
+        {
+          type: 'mcq',
+          question:
+            'Dua buah dadu bermata enam dilempar sekaligus. Peluang muncul mata dadu berjumlah 6 adalah...',
+          options: ['5/36', '6/36', '7/36', '8/36', '9/36'],
+          correct: '5/36',
+        },
+        {
+          type: 'mcq',
+          question:
+            'Dalam sebuah kotak terdapat 6 bola merah dan 3 bola putih. Dua bola diambil satu persatu tanpa pengembalian. Peluang terambilnya bola pertama merah dan bola kedua putih adalah ...',
+          options: ['1/2', '1/3', '1/4', '1/5', '1/6'],
+          correct: '1/4',
+        },
+        {
+          type: 'mcq',
+          question:
+            'Pada percobaan pelemparan tiga keping uang logam sebanyak 600 kali, maka besar frekuensi harapan muncul dua gambar adalah ... kali',
+          options: ['150', '200', '225', '300', '450'],
+          correct: '225',
+        },
+        {
+          type: 'mcq',
+          question:
+            'Dua buah dadu berwarna merah dan putih diundi satu kali. Salah satu kemungkinan kejadian munculnya jumlah 10 pada dadu merah dan dadu putih adalah...',
+          options: ['(6, 3)', '(4, 6)', '(7, 3)', '(3, 6)', '(4, 5)'],
+          correct: '(4, 6)',
+        },
+        {
+          type: 'mcq',
+          question:
+            'Sebuah dadu yang homogen bermata enam dilempar satu kali, peluang kejadiannya adalah 1/2. Kejadian pengundian yang memenuhi syarat peluang tersebut adalah munculnya mata dadu...',
+          options: [
+            'Lebih dari 4',
+            'Kurang dari 3',
+            'Genap',
+            'Faktor dari 5',
+            'Kelipatan 4',
+          ],
+          correct: 'Genap',
+        },
+        {
+          type: 'mcq',
+          question:
+            'Sepasang suami istri bermaksud mengikuti Keluarga Berencana (KB). Mereka berharap memiliki tiga anak. Kejadian susunan anak yang memiliki peluang tepat 1/8 adalah ...',
+          options: [
+            '1 Laki-laki dan 2 Perempuan',
+            '2 Laki-laki dan 1 Perempuan',
+            'Ketiganya Laki-laki',
+            'Paling sedikit 1 Laki-laki',
+            'Paling banyak 2 Perempuan',
+          ],
+          correct: 'Ketiganya Laki-laki',
+        },
+      ];
+
+      // ======================== STATE ========================
+      let nama = '';
+      let kelas = '';
+      let currentIndex = 0;
+      const totalSoal = soalData.length;
+      let timerInterval = null;
+      let timeLeft = 2700; // 15 menit
+      let quizFinished = false;
+      let warningInterval = null;
+      let warningActive = false;
+      let jawabanUser = {};
+
+      let focusLostTime = 0;
+      let focusInterval = null;
+      const FOCUS_GRACE_PERIOD = 3000;
+
+      // DOM refs
+      const loginPage = document.getElementById('loginPage');
+      const quizPage = document.getElementById('quizPage');
+      const resultPage = document.getElementById('resultPage');
+      const soalContainer = document.getElementById('soalContainer');
+      const timerDisplay = document.getElementById('timerDisplay');
+      const progressDisplay = document.getElementById('progressDisplay');
+      const btnStart = document.getElementById('btnStart');
+      const btnPrev = document.getElementById('btnPrev');
+      const btnNext = document.getElementById('btnNext');
+      const btnSubmitQuiz = document.getElementById('btnSubmitQuiz');
+      const btnClose = document.getElementById('btnClose');
+      const namaInput = document.getElementById('namaInput');
+      const kelasSelect = document.getElementById('kelasSelect');
+      const fullscreenWarning = document.getElementById('fullscreenWarning');
+      const timerWarning = document.getElementById('timerWarning');
+      const countdownTimer = document.getElementById('countdownTimer');
+      const btnBackFullscreen = document.getElementById('btnBackFullscreen');
+      const statusSpreadsheet = document.getElementById('statusSpreadsheet');
+      const focusLossBadge = document.getElementById('focusLossBadge');
+
+      // ======================== BLOKIR ========================
+      document.addEventListener('contextmenu', (e) => e.preventDefault());
+      document.addEventListener('copy', (e) => e.preventDefault());
+      document.addEventListener('cut', (e) => e.preventDefault());
+      document.addEventListener('paste', (e) => e.preventDefault());
+
+      // ======================== FUNGSI KUIS AKTIF ========================
+      function isQuizActive() {
+        return (
+          quizPage && !quizPage.classList.contains('hidden') && !quizFinished
+        );
+      }
+
+      // ======================== DETEKSI KEHILANGAN FOKUS ========================
+      function startFocusMonitoring() {
+        if (focusInterval) clearInterval(focusInterval);
+        focusInterval = setInterval(() => {
+          if (!isQuizActive()) return;
+          if (!document.hasFocus()) {
+            if (focusLostTime === 0) {
+              focusLostTime = Date.now();
+              focusLossBadge.classList.add('active');
+            } else {
+              const elapsed = Date.now() - focusLostTime;
+              if (elapsed > FOCUS_GRACE_PERIOD) {
+                clearInterval(focusInterval);
+                focusInterval = null;
+                focusLossBadge.classList.remove('active');
+                window
+                  .customAlert(
+                    '⚠️ Anda kehilangan fokus dari jendela kuis terlalu lama! Kuis dihentikan.',
+                    '🚫'
+                  )
+                  .then(() => {
+                    finishQuiz(true);
+                  });
+              }
+            }
+          } else {
+            if (focusLostTime !== 0) {
+              const elapsed = Date.now() - focusLostTime;
+              if (elapsed < FOCUS_GRACE_PERIOD) {
+                focusLostTime = 0;
+                focusLossBadge.classList.remove('active');
+              } else {
+                focusLostTime = 0;
+                focusLossBadge.classList.remove('active');
+              }
+            }
+          }
+        }, 500);
+      }
+
+      function stopFocusMonitoring() {
+        if (focusInterval) {
+          clearInterval(focusInterval);
+          focusInterval = null;
+        }
+        focusLostTime = 0;
+        focusLossBadge.classList.remove('active');
+      }
+
+      // ======================== PERINGATAN TAB ========================
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && isQuizActive()) {
+          window
+            .customAlert(
+              '⚠️ Anda terdeteksi berpindah tab! Kuis akan diselesaikan otomatis.',
+              '🚫'
+            )
+            .then(() => {
+              finishQuiz(true);
+            });
+        }
+      });
+
+      // ======================== KEYBOARD ========================
+      document.addEventListener('keydown', function (e) {
+        if (!isQuizActive()) return;
+        const key = e.key;
+
+        if (key === 'Escape' || key === 'Esc') {
+          e.preventDefault();
+          window.customAlert(
+            '❓ Apakah Anda ingin menghentikan dan keluar dari kuis sekarang?',
+            '🛑',
+            function (confirmed) {
+              if (confirmed) finishQuiz(true);
+            }
+          );
+          return;
+        }
+
+        if (key === 'Tab') {
+          e.preventDefault();
+          window.customAlert(
+            '⚠️ Tombol Tab dilarang saat ujian. Ingin langsung menyelesaikan kuis?',
+            '⚠️',
+            function (confirmed) {
+              if (confirmed) finishQuiz();
+            }
+          );
+          return;
+        }
+
+        if (key === 'Enter') {
+          const activeTag = document.activeElement
+            ? document.activeElement.tagName.toLowerCase()
+            : '';
+          if (activeTag !== 'input' || document.activeElement.type !== 'text') {
+            e.preventDefault();
+            finishQuiz();
+          }
+        }
+      });
+
+      // ======================== RENDER SOAL ========================
+      function renderSoal(index) {
+        const soal = soalData[index];
+        if (!soal) return;
+
+        let html = `<div class="soal-card">`;
+        html += `<div class="nomor-soal">Soal ${index + 1} dari ${totalSoal}</div>`;
+        html += `<div class="pertanyaan">${soal.question}</div>`;
+
+        if (soal.type === 'mcq') {
+          const labels = ['A', 'B', 'C', 'D', 'E'];
+          html += `<div class="opsi-vertical">`;
+          soal.options.forEach((opt, i) => {
+            const val = opt;
+            const checked = jawabanUser[index] === val ? 'checked' : '';
+            const selectedClass = jawabanUser[index] === val ? 'selected' : '';
+            html += `
+                        <label class="${selectedClass}" onclick="pilihOpsi(${index}, '${val}')">
+                            <input type="radio" name="q${index}" value="${val}" ${checked} />
+                            <span class="option-label">${labels[i]}.</span>
+                            <span class="option-text">${opt}</span>
+                        </label>
+                    `;
+          });
+          html += `</div>`;
+        } else if (soal.type === 'truefalse') {
+          const tfVal = jawabanUser[index] || '';
+          html += `<div class="truefalse-group">`;
+          const tfOptions = [
+            { val: 'true', label: '✅ Benar' },
+            { val: 'false', label: '❌ Salah' },
+          ];
+          tfOptions.forEach((item) => {
+            const checked = tfVal === item.val ? 'checked' : '';
+            const selectedClass = tfVal === item.val ? 'selected' : '';
+            html += `
+                        <label class="${selectedClass}" onclick="pilihTrueFalse(${index}, '${item.val}')">
+                            <input type="radio" name="tf${index}" value="${item.val}" ${checked} />
+                            ${item.label}
+                        </label>
+                    `;
+          });
+          html += `</div>`;
+        } else if (soal.type === 'fill') {
+          const val = jawabanUser[index] || '';
+          html += `<div class="fill-group">
+                            <input type="text" id="fill_${index}" placeholder="Ketik jawaban angka..." 
+                                   value="${val}" autocomplete="off" 
+                                   oninput="simpanFill(${index}, this.value)" />
+                        </div>`;
+        }
+
+        html += `</div>`;
+        soalContainer.innerHTML = html;
+
+        progressDisplay.textContent = `${index + 1} / ${totalSoal}`;
+
+        btnPrev.disabled = index === 0;
+        if (index === totalSoal - 1) {
+          btnNext.textContent = '📨 Kirim Jawaban';
+          btnNext.className = 'nav-btn nav-btn-success';
+          btnNext.onclick = () => finishQuiz();
+        } else {
+          btnNext.textContent = 'Selanjutnya ▶';
+          btnNext.className = 'nav-btn nav-btn-primary';
+          btnNext.onclick = () => {
+            if (index < totalSoal - 1) {
+              currentIndex++;
+              renderSoal(currentIndex);
+            }
+          };
+        }
+
+        soalContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      // ======================== FUNGSI PILIH ========================
+      window.pilihOpsi = function (index, value) {
+        jawabanUser[index] = value;
+        renderSoal(index);
+      };
+
+      window.pilihTrueFalse = function (index, value) {
+        jawabanUser[index] = value;
+        renderSoal(index);
+      };
+
+      window.simpanFill = function (index, value) {
+        jawabanUser[index] = value.trim();
+      };
+
+      // ======================== NAVIGASI ========================
+      btnPrev.addEventListener('click', function () {
+        if (currentIndex > 0) {
+          currentIndex--;
+          renderSoal(currentIndex);
+        }
+      });
+
+      // ======================== HITUNG SKOR ========================
+      function hitungSkor() {
+        let benar = 0;
+        soalData.forEach((soal, idx) => {
+          const jawab = jawabanUser[idx] || '';
+          if (jawab === soal.correct) benar++;
+        });
+        return benar;
+      }
+
+      // ======================== KIRIM KE SPREADSHEET ========================
+      function sendToSpreadsheet(nama, kelas, nilai, skor) {
+        const data = {
+          nama,
+          kelas,
+          nilai,
+          skor,
+          tanggal: new Date().toLocaleString('id-ID', { hour12: false }),
+        };
+        statusSpreadsheet.className = 'status-send sending';
+        statusSpreadsheet.textContent = '⏳ Mengirim nilai...';
+
+        const formBody = Object.keys(data)
+          .map(
+            (key) =>
+              encodeURIComponent(key) + '=' + encodeURIComponent(data[key])
+          )
+          .join('&');
+
+        fetch(GOOGLE_SHEETS_WEBAPP_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formBody,
+        })
+          .then(() => {
+            statusSpreadsheet.className = 'status-send success';
+            statusSpreadsheet.textContent = '✅ Nilai berhasil dikirim!';
+          })
+          .catch((err) => {
+            statusSpreadsheet.className = 'status-send error';
+            statusSpreadsheet.textContent = `❌ Gagal kirim: ${err.message}`;
+          });
+      }
+
+      // ======================== FINISH QUIZ ========================
+      function finishQuiz(force = false) {
+        if (quizFinished) return;
+        quizFinished = true;
+
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+        stopFocusMonitoring();
+
+        document
+          .querySelectorAll('#soalContainer input')
+          .forEach((el) => (el.disabled = true));
+        btnSubmitQuiz.disabled = true;
+        btnPrev.disabled = true;
+        btnNext.disabled = true;
+
+        const skor = hitungSkor();
+        const nilai = Math.round((skor / totalSoal) * 100);
+
+        quizPage.classList.add('hidden');
+        resultPage.classList.remove('hidden');
+        document.getElementById('skorAkhir').textContent = force
+          ? '0 (Batal/Diskualifikasi)'
+          : nilai;
+        document.getElementById('resultNama').textContent = nama;
+        document.getElementById('resultKelas').textContent = kelas;
+
+        sendToSpreadsheet(nama, kelas, force ? 0 : nilai, force ? 0 : skor);
+
+        sessionStorage.setItem('kuis_selesai', 'true');
+        sessionStorage.setItem('kuis_nama', nama);
+        sessionStorage.setItem('kuis_kelas', kelas);
+        sessionStorage.setItem('kuis_nilai', force ? 0 : nilai);
+
+        if (document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        }
+        hideFullscreenWarning();
+      }
+
+      // ======================== TIMER ========================
+      function startTimer() {
+        timerInterval = setInterval(() => {
+          timeLeft--;
+          const min = Math.floor(timeLeft / 60);
+          const sec = timeLeft % 60;
+          timerDisplay.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+          if (timeLeft <= 30) {
+            timerDisplay.classList.add('warning');
+          }
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            window
+              .customAlert('⏰ Waktu pengerjaan kuis telah habis!', '⏰')
+              .then(() => finishQuiz(true));
+          }
+        }, 1000);
+      }
+
+      // ======================== FULLSCREEN ========================
+      function requestFullscreen() {
+        const el = document.documentElement;
+        if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+      }
+
+      function showFullscreenWarning() {
+        if (warningActive || quizFinished) return;
+        warningActive = true;
+        fullscreenWarning.style.display = 'flex';
+        let timeLeftWarning = 10;
+        timerWarning.textContent = timeLeftWarning;
+        countdownTimer.textContent = timeLeftWarning;
+
+        if (warningInterval) clearInterval(warningInterval);
+        warningInterval = setInterval(() => {
+          timeLeftWarning--;
+          timerWarning.textContent = timeLeftWarning;
+          countdownTimer.textContent = timeLeftWarning;
+          if (timeLeftWarning <= 0) {
+            clearInterval(warningInterval);
+            warningInterval = null;
+            window
+              .customAlert(
+                '⏰ Terlalu lama keluar dari fullscreen. Kuis dihentikan.',
+                '⏰'
+              )
+              .then(() => finishQuiz(true));
+          }
+        }, 1000);
+      }
+
+      function hideFullscreenWarning() {
+        if (warningInterval) {
+          clearInterval(warningInterval);
+          warningInterval = null;
+        }
+        fullscreenWarning.style.display = 'none';
+        warningActive = false;
+      }
+
+      document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement && isQuizActive()) {
+          showFullscreenWarning();
+        } else {
+          hideFullscreenWarning();
+        }
+      });
+
+      btnBackFullscreen.addEventListener('click', requestFullscreen);
+
+      // ======================== START ========================
+      btnStart.addEventListener('click', function () {
+        nama = namaInput.value.trim();
+        kelas = kelasSelect.value;
+        if (!nama || !kelas) {
+          window.customAlert(
+            'Silakan lengkapi Nama dan Kelas terlebih dahulu!',
+            '⚠️'
+          );
+          return;
+        }
+
+        if (sessionStorage.getItem('kuis_selesai') === 'true') {
+          window.customAlert(
+            'Anda sudah menyelesaikan kuis ini sebelumnya.',
+            'ℹ️'
+          );
+          return;
+        }
+
+        loginPage.classList.add('hidden');
+        quizPage.classList.remove('hidden');
+        currentIndex = 0;
+        jawabanUser = {};
+        renderSoal(0);
+        startTimer();
+        startFocusMonitoring();
+        requestFullscreen();
+      });
+
+      // ======================== SUBMIT ========================
+      btnSubmitQuiz.addEventListener('click', function () {
+        if (quizFinished) return;
+        finishQuiz();
+      });
+
+      // ======================== CLOSE ========================
+      btnClose.addEventListener('click', () => location.reload());
+
+      // ======================== LOAD STATE ========================
+      window.addEventListener('load', function () {
+        if (sessionStorage.getItem('kuis_selesai') === 'true') {
+          loginPage.classList.add('hidden');
+          quizPage.classList.add('hidden');
+          resultPage.classList.remove('hidden');
+          document.getElementById('skorAkhir').textContent =
+            sessionStorage.getItem('kuis_nilai') || 0;
+          document.getElementById('resultNama').textContent =
+            sessionStorage.getItem('kuis_nama') || '-';
+          document.getElementById('resultKelas').textContent =
+            sessionStorage.getItem('kuis_kelas') || '-';
+          statusSpreadsheet.className = 'status-send success';
+          statusSpreadsheet.textContent =
+            '✅ Data nilai Anda telah tersimpan sebelumnya.';
+        }
+      });
+    </script>
+  </body>
+</html>
